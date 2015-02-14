@@ -1134,6 +1134,14 @@ EndStopHit Platform::Stopped(size_t drive)
 					: noStop;
 	}
 
+	if (nvData.zProbeType == 0 && drive == Z_AXIS && endStopType[3] != noEndStop)
+	{
+		if (digitalReadNonDue(endStopPins[3]) == ((endStopLogicLevel[3]) ? 1 : 0))
+		{
+			return (endStopType[3] == highEndStop) ? highHit : lowHit;
+		}
+	}
+
 	if (endStopPins[drive] >= 0 && endStopType[drive] != noEndStop)
 	{
 		if (digitalReadNonDue(endStopPins[drive]) == ((endStopLogicLevel[drive]) ? 1 : 0))

@@ -68,6 +68,7 @@ Licence: GPL
 
 #define DRIVES 8 // The number of drives in the machine, including X, Y, and Z plus extruder drives
 #define AXES 3 // The number of movement axes in the machine, usually just X, Y and Z. <= DRIVES
+#define FEEDERS 5 // The number of feeders in the machine, usually E0, E1, E2, E3, E4 <= DRIVES
 #define HEATERS 6 // The number of heaters in the machine; 0 is the heated bed even if there isn't one.
 
 // The numbers of entries in each array must correspond with the values of DRIVES,
@@ -83,7 +84,7 @@ Licence: GPL
 #define ENABLE_PINS {29, 27, X1, X0, 37, X8, 50, 47}
 #define ENABLE false // What to send to enable...
 #define DISABLE true // ...and disable a drive
-#define DISABLE_DRIVES {false, false, true, false, false, false, false, false} // Set true to disable a drive when it becomes idle
+#define DISABLE_DRIVES {false, false, false, false, false, false, false, false} // Set true to disable a drive when it becomes idle
 #define END_STOP_PINS {11, 28, 60, 31, 24, 46, 45, 44} //E Stops not currently used
 // Indices for motor current digipots (if any)
 // first 4 are for digipot 1,(on duet)
@@ -778,8 +779,8 @@ private:
   float axisMaxima[AXES];
   float axisMinima[AXES];
   float homeFeedrates[AXES];
-  EndStopType endStopType[AXES];
-  bool endStopLogicLevel[AXES];
+  EndStopType endStopType[DRIVES];
+  bool endStopLogicLevel[DRIVES];
   
 // HEATERS - Bed is assumed to be the first
 

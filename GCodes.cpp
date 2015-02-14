@@ -3352,10 +3352,28 @@ bool GCodes::HandleMcode(GCodeBuffer* gb)
 				if (gb->Seen(axisLetters[axis]))
 				{
 					int ival = gb->GetIValue();
-					if (ival >= 0 && ival <= 3)
+					if (ival >= 0 && ival <= 2)
 					{
 						platform->SetEndStopConfiguration(axis, (EndStopType)ival, logicLevel);
 						seen = true;
+					}
+				}
+			}
+			for (size_t feeder = 0; feeder < FEEDERS; ++feeder)
+			{
+				if (gb->Seen('E'))
+				{
+					int ival = gb->GetIValue();
+					if (ival/10 == feeder)
+					{
+						size_t drive = AXES + feeder;
+
+						ival -= 10 * feeder;
+						if (ival >= 0 && ival <= 2)
+						{
+							platform->SetEndStopConfiguration(drive, (EndStopType)ival, logicLevel);
+							seen = true;
+						}
 					}
 				}
 			}
@@ -3367,11 +3385,21 @@ bool GCodes::HandleMcode(GCodeBuffer* gb)
 					EndStopType config;
 					bool logic;
 					platform->GetEndStopConfiguration(axis, config, logic);
-					reply.catf(" %c %s %s %c",
+					reply.catf(" %c %s %s ','",
 								axisLetters[axis],
 								(config == highEndStop) ? "high end" : (config == lowEndStop) ? "low end" : "none",
+								(config == noEndStop) ? "" : (logic) ? " (active high)" : " (active low)");
+				}
+				for (size_t feeder = 0; feeder < FEEDERS; ++feeder)
+				{
+					EndStopType config;
+					bool logic;
+					platform->GetEndStopConfiguration(feeder+AXES, config, logic);
+					reply.catf(" E%d %s %s %c",
+								feeder,
+								(config == highEndStop) ? "high end" : (config == lowEndStop) ? "low end" : "none",
 								(config == noEndStop) ? "" : (logic) ? " (active high)" : " (active low)",
-								(axis == AXES - 1) ? '\n' : ',');
+								(feeder == FEEDERS - 1) ? '\n' : ',');
 				}
 			}
 		}
